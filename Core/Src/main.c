@@ -532,23 +532,36 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 				break;
 			}
 			case 0x03://WRITE
-			{
-				UART2.RxBuffer[8];
+			{   uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]<<8 &0xFF);
+				uint8_t counter0 = datalen-5;
+
+				for (int i=0;i<counter0;i++ )
+				{
+					Memory[startAddr+i]=parameter[2+i];
+				}
+//				Memory[startAddr]=parameter[2];
+//				Memory[75]=parameter[3];
 
 
-				//LAB
+				uint8_t temp[]={0xFF,0xFF,0xFD,0x00,0x01,0x04,0x00,0x55,0x00,0x00,0x00};
+				uint16_t crc_calc = update_crc(0, temp, 9);
+				temp[9] = crc_calc & 0xff;
+				temp[10] = (crc_calc >> 8) & 0xFF;
+				UARTTxWrite(uart, temp,11);
+
+
+					break;
+
+
 			}
 			default: //Unknown Inst
 			{
-				uint8_t temp[] =
-				{ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x02, 0x00,
-						0x00 };
+				uint8_t temp[] ={ 0xff, 0xff, 0xfd, 0x00, 0x00, 0x05, 0x00, 0x55, 0x02, 0x00,0x00 };
 				temp[4] = MotorID;
 				uint16_t crc_calc = update_crc(0, temp, 9);
 				temp[9] = crc_calc & 0xff;
 				temp[10] = (crc_calc >> 8) & 0xFF;
 				UARTTxWrite(uart, temp, 11);
-
 				break;
 			}
 			}
