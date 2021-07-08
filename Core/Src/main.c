@@ -534,11 +534,9 @@ void DynamixelProtocal2(uint8_t *Memory, uint8_t MotorID, int16_t dataIn,
 			case 0x03://WRITE
 			{   uint16_t startAddr = (parameter[0]&0xFF)|(parameter[1]<<8 &0xFF);
 				uint8_t counter0 = datalen-5;
-
 				for (int i=0;i<counter0;i++ )
 				{
-					Memory[startAddr+i]=parameter[2+i];
-				}
+				Memory[startAddr+i]=parameter[2+i];}
 //				Memory[startAddr]=parameter[2];
 //				Memory[75]=parameter[3];
 
